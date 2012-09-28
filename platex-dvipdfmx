@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#2011_04_07 
+#引数にtexファイルを与えるとutf-8,euc-jpにかかわらずpdfまで作成する
+
+
+#実行の標準出力を文字列に格納するときは
+#シングルクオートではなくて、Shift押しながら@キーをおすときの文字
+if [ -z $1];then
+  read -p "texファイルの名前を入力してください:" file
+    if [ !  -f  $file ];then
+      echo "そのファイルは存在しません"
+      exit 1
+    fi
+  set $file
+fi
+enc=`nkf -g $1`
+
+#[]の間や演算子の間はしっかりとスペースを開ける
+if [ $enc = 'UTF-8' ]
+then
+  echar=${1%.tex}_euc.tex
+  echo "-------char encoding------"
+  nkf -e $1 > ${echar} 
+ 
+  echo "--------1st platex--------"
+  platex ${echar}
+  echo "--------2nd platex--------"
+  platex ${echar}
+  echo "---------dvipdfmx---------"
+  dvipdfmx ${echar%.tex}.dvi
+else
+  echo "--------1st platex--------"
+  platex $1
+  echo "--------2nd platex--------"
+  platex $1
+  echo "---------dvipdfmx---------"
+  dvipdfmx ${1%.tex}.dvi
+fi
+
