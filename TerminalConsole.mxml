@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+
+@date 2012/09/29 
+@author lucknorth
+
+-->
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300">
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			/** 表示域がフォーカスされた時、そのフォーカスを入力域に設定する */
+			protected function viewArea_focusInHandler(event:FocusEvent):void
+			{
+				inputArea.setFocus();
+			}
+			
+			/** コマンド入力時の動作 */
+			protected function inputArea_enterHandler(event:FlexEvent):void
+			{
+				if(inputArea.text.length > 0)
+				{
+					viewArea.appendText( inputArea.text +"\n" );
+					inputArea.text="";
+					
+					//自動スクロール
+					consoleGroup.validateNow();
+					consoleGroup.verticalScrollPosition=int.MAX_VALUE;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
+	</fx:Declarations>
+	<s:BorderContainer width="100%" height="100%" borderColor="black">
+		<s:Scroller id="consoleScroller" width="100%" height="100%" horizontalScrollPolicy="off" >
+			<s:VGroup id="consoleGroup" width="100%" height="100%"  gap="-15">
+					<!-- 出力データの表示域 -->
+					<s:RichEditableText id="viewArea" 
+										width="100%"
+										paddingLeft="3" paddingTop="5" 
+										focusIn="viewArea_focusInHandler(event)" 
+										editable="false"/>
+					<!-- コマンドの入力域 -->
+					<s:TextInput id="inputArea" 
+								 width="100%" height="20"
+								 borderAlpha="0" borderVisible="false" focusAlpha="0"
+								 enter="inputArea_enterHandler(event)" 
+								 paddingBottom="0" paddingTop="0"/>
+			</s:VGroup>
+		</s:Scroller>
+	</s:BorderContainer>
+</s:Group>
