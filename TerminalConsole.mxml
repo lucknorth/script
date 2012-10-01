@@ -24,7 +24,12 @@
 				{
 					viewArea.appendText( inputArea.text +"\n" );
 					inputArea.text="";
-					
+				    
+                    //UserName$ の部分を表示させるときのみ 下記の2行を実行
+                    var promptLeng:int = viewArea.text.length -
+                                            viewArea.text.lastIndexOF("\n");
+                    inputArea.setStyle("paddingLeft",promptLeng * 7);
+                    	
 					//自動スクロール
 					consoleGroup.validateNow();
 					consoleGroup.verticalScrollPosition=int.MAX_VALUE;
@@ -49,7 +54,8 @@
 					<s:TextInput id="inputArea" 
 								 width="100%" height="20"
 								 borderAlpha="0" borderVisible="false" focusAlpha="0"
-								 enter="inputArea_enterHandler(event)" 
+                                 contentBackgroundAlpha="0"
+								 enter="inputArea_enterHandler(event)"  
 								 paddingBottom="0" paddingTop="0"/>
 			</s:VGroup>
 		</s:Scroller>
