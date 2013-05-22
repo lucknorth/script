@@ -1,12 +1,10 @@
 #!/bin/bash
 
-#2011_04_07 
-#引数にtexファイルを与えるとutf-8,euc-jpにかかわらずpdfまで作成する
+#引数
+##一つ目必須，texファイル名
+##二つ目任意，bibファイル名
 
-
-#実行の標準出力を文字列に格納するときは
-#シングルクオートではなくて、Shift押しながら@キーをおすときの文字
-if [ -z $1];then
+if [ -z $1 ];then
   read -p "texファイルの名前を入力してください:" file
     if [ !  -f  $file ];then
       echo "そのファイルは存在しません"
@@ -14,27 +12,38 @@ if [ -z $1];then
     fi
   set $file
 fi
+
+echo "check {encode}"
 enc=`nkf -g $1`
 
-#[]の間や演算子の間はしっかりとスペースを開ける
-if [ $enc = 'UTF-8' ]
-then
-  echar=${1%.tex}_euc.tex
-  echo "-------char encoding------"
-  nkf -e $1 > ${echar} 
- 
-  echo "--------1st platex--------"
-  platex ${echar}
-  echo "--------2nd platex--------"
-  platex ${echar}
-  echo "---------dvipdfmx---------"
-  dvipdfmx ${echar%.tex}.dvi
-else
-  echo "--------1st platex--------"
-  platex $1
-  echo "--------2nd platex--------"
-  platex $1
-  echo "---------dvipdfmx---------"
-  dvipdfmx ${1%.tex}.dvi
+if [ ${enc} = 'UTF-8' ];then
+   encode='utf8'
+elif [ ${enc} = 'Shift_JIS' ];then
+   encode='sjis'
+elif [ ${enc} = 'EUC-JP' ];then
+   encode='enc' 
+elif [ ${enc} = 'ISO-2022-JP' ];then
+   encode='jis'
+else 
+    echo "文字コード" + ${enc} + "には対応していません"
+    exit 1
+fi
+echo $1 + "'s encode is " + ${encode}
+
+echo "--------1st platex--------"
+platex -kanji=${encode} $1
+
+#二つ目の引数ある場合はpbibする
+if [ ! -z $2 ];then
+    echo "--------pbibtex--------"
+    platex -kanji=${encode} $1
+    echo "--------re platex--------"
+    platex -kanji=${encode} $1
 fi
 
+echo "--------2nd platex--------"
+platex -kanji=${encode} $1
+echo "---------dvipdfmx---------"
+dvipdfmx ${1%.tex}
+echo "---------open pdf---------"
+open ${1%.tex}.pdf

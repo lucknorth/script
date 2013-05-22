@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#引数
+#前回起動した時のtexファイルサイズと比べて増えていればコンパイル
+#そうでなければ無視
+#platex-autoに渡す
+
+if [ -z $1 ];then
+  read -p "texファイルの名前を入力してください:" file
+    if [ !  -f  $file ];then
+      echo "そのファイルは存在しません"
+      exit 1
+    fi
+  set $file
+fi
+
+#ファイルサイズのチェック
+size_old=`ls -l $1 | awk '{print $5}'`
+
+while true; do
+
+    size_now=`ls -l $1 | awk '{print $5}'`
+    if [ $size_old -ne $size_now ];then
+        size_old=$size_now
+        if [ ! -z $2 ];then
+            platex-dvipdfmx $1 $2
+        else 
+            platex-dvipdfmx $1
+        fi
+    fi
+    sleep 1
+done
+
