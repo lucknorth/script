@@ -45,5 +45,3 @@ echo "--------2nd platex--------"
 platex -kanji=${encode} $1
 echo "---------dvipdfmx---------"
 dvipdfmx ${1%.tex}
-echo "---------open pdf---------"
-open ${1%.tex}.pdf
