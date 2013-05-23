@@ -36,7 +36,7 @@ platex -kanji=${encode} $1
 #二つ目の引数ある場合はpbibする
 if [ ! -z $2 ];then
     echo "--------pbibtex--------"
-    platex -kanji=${encode} $1
+    pbibtex -kanji=${encode} $1
     echo "--------re platex--------"
     platex -kanji=${encode} $1
 fi
